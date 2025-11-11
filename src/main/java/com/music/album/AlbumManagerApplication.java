@@ -1,8 +1,9 @@
-package com.music.psujavasampleproject;
+package com.music.album;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+// главный класс приложения для управления музыкальными альбомами
 @SpringBootApplication
 public class AlbumManagerApplication {
 
