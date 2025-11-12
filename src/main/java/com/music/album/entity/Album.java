@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "albums")
 public class Album {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,4 +41,86 @@ public class Album {
     @Size(max = 500, message = "Описание не должно превышать 500 символов")
     @Column(name = "description", length = 500)
     private String description;
+
+    // конструкторы
+    public Album() {
+    }
+
+    public Album (String title, String artist, Integer releaseYear, String genre, Integer trackCount, String description) {
+        this.title = title;
+        this.artist = artist;
+        this.releaseYear = releaseYear;
+        this.genre = genre;
+        this.trackCount = trackCount;
+        this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public Integer getReleaseYear() {
+        return releaseYear;
+    }
+
+    public void setReleaseYear(Integer releaseYear) {
+        this.releaseYear = releaseYear;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public Integer getTrackCount() {
+        return trackCount;
+    }
+
+    public void setTrackCount(Integer trackCount) {
+        this.trackCount = trackCount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "Album{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", artist='" + artist + '\'' +
+                ", releaseYear=" + releaseYear +
+                ", genre='" + genre + '\'' +
+                ", trackCount=" + trackCount +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
