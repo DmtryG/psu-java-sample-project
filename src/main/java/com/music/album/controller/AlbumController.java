@@ -53,7 +53,7 @@ public class AlbumController {
 
         albumService.saveAlbum(album);
         redirectAttributes.addFlashAttribute("successMessage",
-                "Альбом '" + album.getTitle() + "' успешно добавлен!");
+                "Альбом " + album.getTitle() + " успешно добавлен");
         return "redirect:/albums";
     }
 
@@ -64,7 +64,7 @@ public class AlbumController {
                 .orElse(null);
 
         if (album == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Альбом не найден!");
+            redirectAttributes.addFlashAttribute("errorMessage", "Альбом не найден");
             return "redirect:/albums";
         }
 
@@ -89,11 +89,83 @@ public class AlbumController {
         try {
             albumService.updateAlbum(id, album);
             redirectAttributes.addFlashAttribute("successMessage",
-                    "Альбом '" + album.getTitle() + "' успешно обновлен!");
+                    "Альбом " + album.getTitle() + " успешно обновлен");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 
         return "redirect:/albums";
+    }
+
+    // удаление альбома
+    @GetMapping("/delete/{id}")
+    public String deleteAlbum(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            Album album = albumService.getAlbumById(id).orElse(null);
+            if (album != null) {
+                albumService.deleteAlbum(id);
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Альбом " + album.getTitle() + " успешно удален");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Альбом не найден");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Ошибка при удалении альбома: " + e.getMessage());
+        }
+
+        return "redirect:/albums";
+    }
+
+    // просмотр деталей альбома
+    @GetMapping("/view/{id}")
+    public String viewAlbum(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        Album album = albumService.getAlbumById(id).orElse(null);
+
+        if (album == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Альбом не найден");
+            return "redirect:/albums";
+        }
+
+        model.addAttribute("album", album);
+        return "albums/view";
+    }
+
+    // поиск альбомов
+    @GetMapping("/search")
+    public String searchAlbums(@RequestParam(required = false) String searchType,
+                               @RequestParam(required = false) String searchQuery,
+                               Model model) {
+        List<Album> albums;
+
+        if (searchQuery == null || searchQuery.trim().isEmpty()) {
+            albums = albumService.getAllAlbums();
+        } else {
+            switch (searchType != null ? searchType : "title") {
+                case "artist":
+                    albums = albumService.searchByArtist(searchQuery);
+                    break;
+                case "genre":
+                    albums = albumService.searchByGenre(searchQuery);
+                    break;
+                case "year":
+                    try {
+                        Integer year = Integer.parseInt(searchQuery);
+                        albums = albumService.searchByYear(year);
+                    } catch (NumberFormatException e) {
+                        albums = List.of();
+                    }
+                    break;
+                default:
+                    albums = albumService.searchByTitle(searchQuery);
+                    break;
+            }
+        }
+
+        model.addAttribute("albums", albums);
+        model.addAttribute("albumCount", albums.size());
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("searchQuery", searchQuery);
+        return "albums/list";
     }
 }
